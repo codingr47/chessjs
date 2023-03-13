@@ -18,6 +18,13 @@ function setPixel(buffer: Uint8Array, color: THREE.Color, index: number) {
 	buffer[stride + 3] = 255;
 }
 
+function getPixelColor(buffer: Uint8Array, index: number): THREE.Color {
+	const stride = index * 4;
+	const r = buffer[stride] / 255;
+	const g = buffer[stride + 1] / 255;
+	const b = buffer[stride + 2] / 255;
+	return new THREE.Color(r, g, b);
+}
 function getBoardTextureBitmap(dimension: number, hover: THREE.Vector2 | undefined) {
 	const textureSize = Math.pow(dimension, 2);
 	const pixelData = new Uint8Array(4 * textureSize);
@@ -59,8 +66,10 @@ function getBoard(dimension: number) {
 	
 	const geometry = new THREE.PlaneGeometry(dimension, dimension);
 	const bitmap = getBoardTextureBitmap(TEXTURE_DIMENSION, undefined);
-	const tempBufferIndexes = [];
-	//const originalColor: THREE.Color | undefined;
+	let tempBufferIndexes: number[] = [];
+	let originalColor: THREE.Color | undefined;
+	let lastHoveredX = -1;
+	let lastHoveredY = -1;
 	const mat = new THREE.MeshBasicMaterial({
 		//color: 0x000000,
 		side: THREE.DoubleSide,
@@ -74,12 +83,22 @@ function getBoard(dimension: number) {
 			const hoverColor = new THREE.Color(colorStringToInt(theme.hoverColor));
 			const squreDimension = Math.floor(TEXTURE_DIMENSION / 8);
 			const color = hoverColor;
+			if (0 < tempBufferIndexes.length && originalColor) {
+				for (const i of tempBufferIndexes) {
+					setPixel(bitmap, originalColor, i);
+				}
+				tempBufferIndexes = [];
+			}
+			originalColor = getPixelColor(bitmap, (y * squreDimension * TEXTURE_DIMENSION) + (x * (squreDimension)) + 10);
 			for (let i = 0; i < squreDimension; i++) {
 				for (let j = 0; j < squreDimension; j++) {
 					const k = ((y * squreDimension * TEXTURE_DIMENSION) + (i * TEXTURE_DIMENSION) + (x * (squreDimension) + j))
 					setPixel(bitmap, color, k);
+					tempBufferIndexes.push(k);
 				}
 			}
+			lastHoveredX = x;
+			lastHoveredY = y;
 			mat.map = getDataTextureFromBitmap(bitmap, TEXTURE_DIMENSION);
 		},
 		plane,
