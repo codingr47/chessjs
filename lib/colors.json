@@ -1,4 +1,5 @@
 {
-	"primaryColor": "#1d1d1d",
-	"secondaryColor": "#fffffff"
+	"primaryColor": "#1a0000",
+	"secondaryColor": "#fffffff",
+	"hoverColor": "#aa0000"
 }
