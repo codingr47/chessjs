@@ -1,117 +1,10 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import Chessboard from "./chessboard";
 import theme from "./colors.json"
 
-const colorStringToInt = (color: string) => { 
-	return parseInt(color.substring(1), 16);
-}
-
 const TEXTURE_DIMENSION = 400;
-
-function setPixel(buffer: Uint8Array, color: THREE.Color, index: number) {
-	const stride = index * 4;
-	const r = Math.floor( color.r * 255 );
-	const g = Math.floor( color.g * 255 );
-	const b = Math.floor( color.b * 255 );
-	buffer[stride] = r;
-	buffer[stride + 1] = g;
-	buffer[stride + 2] = b;
-	buffer[stride + 3] = 255;
-}
-
-function getPixelColor(buffer: Uint8Array, index: number): THREE.Color {
-	const stride = index * 4;
-	const r = buffer[stride] / 255;
-	const g = buffer[stride + 1] / 255;
-	const b = buffer[stride + 2] / 255;
-	return new THREE.Color(r, g, b);
-}
-function getBoardTextureBitmap(dimension: number) {
-	const textureSize = Math.pow(dimension, 2);
-	const pixelData = new Uint8Array(4 * textureSize);
-	const primaryColor = new THREE.Color(colorStringToInt(theme.primaryColor));
-	const secondaryColor = new THREE.Color(colorStringToInt(theme.secondaryColor));
-	const dimensionSquare = Math.floor(dimension / 8);
-	let color: THREE.Color = primaryColor;
-	let j = 0;
-	let k = 0;
-	for (let i = 0; i< textureSize; i++) {
-		const isPrimaryColor = (0 === (Math.floor(j / dimensionSquare) + Math.floor(k / dimensionSquare)) % 2) ? true : false;
-		if (isPrimaryColor) {
-			color = primaryColor;
-		} else {
-			color = secondaryColor;
-		}
-		setPixel(pixelData, color, i);
-		j++;
-		if (j === dimension) {
-			j = 0;
-			k++;
-		}
-	}
-	return pixelData;
-}
-
-function getDataTextureFromBitmap(pixelData: Uint8Array, textureDimension: number) {
-	const texture = new THREE.DataTexture(pixelData, textureDimension, textureDimension);
-	texture.needsUpdate = true;
-	texture.minFilter = THREE.LinearFilter;
-	return texture;
-}
-
-function fillOriginalColorsMap(buffer: Uint8Array, map: Map<string, THREE.Color>) {
-	const squreDimension = TEXTURE_DIMENSION / 8;
-
-	for (let y = 0; y < 8; y++) {
-		for (let x = 0; x < 8; x++) {
-			const index =  ((y * squreDimension * TEXTURE_DIMENSION) + (x * (squreDimension)));
-			map.set(`${x},${y}`, getPixelColor(buffer, index));
-		}
-	}
-}
-
-function getBoard(dimension: number) {
-	const geometry = new THREE.PlaneGeometry(dimension, dimension);
-	const boardOriginalColorsMap = new Map<string, THREE.Color>();
-	const bitmap = getBoardTextureBitmap(TEXTURE_DIMENSION);
-	fillOriginalColorsMap(bitmap, boardOriginalColorsMap);
-	console.log(boardOriginalColorsMap);
-	let tempBufferIndexes: number[] = [];
-	const mat = new THREE.MeshBasicMaterial({
-		//color: 0x000000,
-		side: THREE.DoubleSide,
-		map: getDataTextureFromBitmap(bitmap, TEXTURE_DIMENSION),
-	});
-	const plane = new THREE.Mesh(geometry, mat);
-	plane.position.set(0,0,0);
-	plane.scale.set(1, 1, 1);
-	let lastHoveredX: number, lastHoveredY: number;
-	return {
-		hover(x: number, y: number) {
-			const hoverColor = new THREE.Color(colorStringToInt(theme.hoverColor));
-			const squreDimension = Math.floor(TEXTURE_DIMENSION / 8);
-			const color = hoverColor;
-			const originalColor = boardOriginalColorsMap.get(`${lastHoveredX},${lastHoveredY}`);
-			if (0 < tempBufferIndexes.length && originalColor) {
-				for (const i of tempBufferIndexes) {
-					setPixel(bitmap, originalColor, i);
-				}
-				tempBufferIndexes = [];
-			}
-			for (let i = 0; i < squreDimension; i++) {
-				for (let j = 0; j < squreDimension; j++) {
-					const k = ((y * squreDimension * TEXTURE_DIMENSION) + (i * TEXTURE_DIMENSION) + (x * (squreDimension) + j))
-					setPixel(bitmap, color, k);
-					tempBufferIndexes.push(k);
-				}
-			}
-			lastHoveredX = x;
-			lastHoveredY = y;
-			mat.map = getDataTextureFromBitmap(bitmap, TEXTURE_DIMENSION);
-		},
-		plane,
-	};
-}
+const MESH_DIMENSION = 100;
 
 function getDebugSphere() {
 	const geometry = new THREE.SphereGeometry(2, 32);
@@ -144,10 +37,15 @@ const DELTA_BOUNDS = 5;
 		throw new Error("Display port cannot be found");
 	}
 	const boardDimensions = 100;
-	const board = getBoard(boardDimensions);
-	scene.add(board.plane);
-	const boundingBox = new THREE.Box3();
-	boundingBox.setFromObject(board.plane);
+	const chessBoard = new Chessboard(scene, {
+		meshDimension: MESH_DIMENSION,
+		colors: {
+			hoverColor: theme.hoverColor,
+			player1Color: theme.primaryColor,
+			player2Color: theme.secondaryColor,
+		},
+		textureDimension: TEXTURE_DIMENSION,
+	});
 	displayPort.appendChild(renderer.domElement);
 	const cursor = getDebugSphere();
 	let lastX: number, lastY: number;
@@ -173,7 +71,7 @@ const DELTA_BOUNDS = 5;
 			if (7 < boardHoverY) {
 				boardHoverY = 7;
 			} 
-			board.hover(
+			chessBoard.hover(
 				boardHoverX,
 				boardHoverY,
 			);
