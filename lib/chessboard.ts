@@ -1,9 +1,13 @@
 import * as THREE from "three";
+import Pawn from "./gameobjects/pawn";
+import { IEGameObject } from "./types";
 import { colorStringToInt } from "./utils";
 
 export type Colors = {
 	player1Color: string;
+	player1Color2: string;
 	player2Color: string;
+	player2Color2: string;
 	hoverColor: string;
 }
 
@@ -39,6 +43,8 @@ export default class Chessboard {
 
 	private lastHoveredY: number = 0;
 
+	private gameObjects: (IEGameObject | null)[][];
+
 
 	constructor(scene: THREE.Scene, { meshDimension, textureDimension, colors }: ChessboardOptions) {
 		this.pixelData = new Uint8Array();
@@ -47,9 +53,11 @@ export default class Chessboard {
 		this.meshDimension = meshDimension;
 		this.colors = colors;
 		this.sceneRef = scene;
+		this.gameObjects = [];
 		this.initializeTexture();
 		this.initializeMesh();
 		this.fillOriginalColorsMap();
+		this.initializeGameObjects();
 
 	}
 
@@ -130,6 +138,36 @@ export default class Chessboard {
 		this.boardMesh = plane;
 	}
 
+	private initializeGameObjects() {
+		for (let x = 0; x < 8; x++) {
+			for (let y = 0; y < 8; y++) {
+				if (!Array.isArray(this.gameObjects[x])) { 
+					this.gameObjects[x] = [];
+				}
+				this.gameObjects[x][y] = null;
+			}
+		}
+		for(let x = 0; x<8; x++) {
+			const pawnPlayer1 = new Pawn({
+				color: new THREE.Color(this.colors.player1Color2),
+				chessboard: this,
+				initialBoardPosition: new THREE.Vector2(x, 1),
+				scene: this.sceneRef,
+				playerOwnership: "player1",
+			});
+			this.gameObjects[x][1] = pawnPlayer1;
+
+			const pawnPlayer2 = new Pawn({
+				color: new THREE.Color(this.colors.player2Color2),
+				chessboard: this,
+				initialBoardPosition: new THREE.Vector2(x, 6),
+				scene: this.sceneRef,
+				playerOwnership: "player2",
+			});
+			this.gameObjects[x][6] = pawnPlayer2;
+		}
+	}
+
 	public hover(x: number, y: number) {
 		const hoverColor = new THREE.Color(colorStringToInt(this.colors.hoverColor));
 		const squreDimension = Math.floor(this.textureDimension / 8);
@@ -153,5 +191,18 @@ export default class Chessboard {
 		if (this.boardMaterial) {
 			this.boardMaterial.map = this.generateDataTextureFromBitmap();
 		}
+	}
+	
+	public logicalPositionToRealPosition(twoDimensionalPosition: THREE.Vector2): THREE.Vector3 {
+		const squareDimension = this.meshDimension / 8;
+		const xZero = -0.5 * this.meshDimension;
+		const yZero = -0.5 * this.meshDimension;
+		const xMargin = squareDimension / 2;
+		const yMargin = squareDimension / 2;
+		return new THREE.Vector3(
+			xMargin+ xZero + (squareDimension * twoDimensionalPosition.x),
+			yMargin + yZero + (squareDimension * twoDimensionalPosition.y),
+			0,
+		)
 	}
 }

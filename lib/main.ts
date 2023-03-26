@@ -42,7 +42,9 @@ const DELTA_BOUNDS = 5;
 		colors: {
 			hoverColor: theme.hoverColor,
 			player1Color: theme.primaryColor,
+			player1Color2: theme.primaryColor2,
 			player2Color: theme.secondaryColor,
+			player2Color2: theme.secondaryColor2,
 		},
 		textureDimension: TEXTURE_DIMENSION,
 	});

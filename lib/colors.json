@@ -1,5 +1,7 @@
 {
 	"primaryColor": "#1a0000",
+	"primaryColor2": "#250000",
 	"secondaryColor": "#fffffff",
+	"secondaryColor2": "#efefef",
 	"hoverColor": "#990000"
 }
