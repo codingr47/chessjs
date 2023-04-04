@@ -167,31 +167,43 @@ export default class Chessboard {
 			this.gameObjects[x][6] = pawnPlayer2;
 		}
 	}
-
 	public hover(x: number, y: number) {
 		const hoverColor = new THREE.Color(colorStringToInt(this.colors.hoverColor));
 		const squreDimension = Math.floor(this.textureDimension / 8);
 		const color = hoverColor;
+		if (this.lastHoveredX !== x || this.lastHoveredY !== y) {
+			this.resetHover();
+			for (let i = 0; i < squreDimension; i++) {
+				for (let j = 0; j < squreDimension; j++) {
+					const k = ((y * squreDimension * this.textureDimension) + (i * this.textureDimension) + (x * (squreDimension) + j))
+					this.setPixel(color, k);
+					this.tempBufferIndexes.push(k);
+				}
+			}
+			this.lastHoveredX = x;
+			this.lastHoveredY = y;
+			if (this.boardMaterial) {
+				this.boardMaterial.map = this.generateDataTextureFromBitmap();
+			}
+		}
+	}
+
+	public resetHover() {
 		const originalColor = this.boardOriginalColorsMap?.get(`${this.lastHoveredX},${this.lastHoveredY}`);
 		if (0 < this.tempBufferIndexes.length && originalColor) {
 			for (const i of this.tempBufferIndexes) {
 				this.setPixel(originalColor, i);
 			}
 			this.tempBufferIndexes = [];
-		}
-		for (let i = 0; i < squreDimension; i++) {
-			for (let j = 0; j < squreDimension; j++) {
-				const k = ((y * squreDimension * this.textureDimension) + (i * this.textureDimension) + (x * (squreDimension) + j))
-				this.setPixel(color, k);
-				this.tempBufferIndexes.push(k);
+			if (this.boardMaterial) {
+				this.boardMaterial.map = this.generateDataTextureFromBitmap();
 			}
-		}
-		this.lastHoveredX = x;
-		this.lastHoveredY = y;
-		if (this.boardMaterial) {
-			this.boardMaterial.map = this.generateDataTextureFromBitmap();
+			this.lastHoveredX = -1;
+			this.lastHoveredY = -1;
 		}
 	}
+	
+
 	
 	public logicalPositionToRealPosition(twoDimensionalPosition: THREE.Vector2): THREE.Vector3 {
 		const squareDimension = this.meshDimension / 8;
@@ -205,4 +217,13 @@ export default class Chessboard {
 			0,
 		)
 	}
+
+	public getBoardDimension() : number {
+		return this.meshDimension;
+	}
+
+	public getGameObject(position: THREE.Vector2): IEGameObject | null {
+		return this.gameObjects[position.x][position.y];
+	}
+
 }
