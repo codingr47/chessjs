@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { Easing, Tween } from "@tweenjs/tween.js";
 import Pawn from "./gameobjects/pawn";
 import { IEGameObject } from "./types";
 import { colorStringToInt } from "./utils";
@@ -37,7 +38,9 @@ export default class Chessboard {
 
 	private boardOriginalColorsMap: Map<string, THREE.Color> | undefined;
 
-	private tempBufferIndexes: number[];
+	private temporaryHoverIndexes: number[];
+
+	private temporarySelectedIndexes:[number, number, number[]][];
 
 	private lastHoveredX: number = 0;
 
@@ -48,7 +51,8 @@ export default class Chessboard {
 
 	constructor(scene: THREE.Scene, { meshDimension, textureDimension, colors }: ChessboardOptions) {
 		this.pixelData = new Uint8Array();
-		this.tempBufferIndexes = [];
+		this.temporaryHoverIndexes = [];
+		this.temporarySelectedIndexes = [];
 		this.textureDimension = textureDimension;
 		this.meshDimension = meshDimension;
 		this.colors = colors;
@@ -167,19 +171,39 @@ export default class Chessboard {
 			this.gameObjects[x][6] = pawnPlayer2;
 		}
 	}
+
+	private getTextureSquareIndexes(x: number, y: number) {
+		const squreDimension = Math.floor(this.textureDimension / 8);
+		const indexes: number[] = [];
+		for (let i = 0; i < squreDimension; i++) {
+			for (let j = 0; j < squreDimension; j++) {
+				const k = ((y * squreDimension * this.textureDimension) + (i * this.textureDimension) + (x * (squreDimension) + j))
+				indexes.push(k);
+			}
+		}
+		return indexes;
+	}
+
+	public select(squares: THREE.Vector2[]) {
+		const color = new THREE.Color(0, 0 , 180);
+		squares.forEach(({ x, y }) => { 
+			this.temporarySelectedIndexes.push([x, y, []]);
+			this.getTextureSquareIndexes(x, y).forEach((k) => { 
+				this.setPixel(color, k);
+				this.temporarySelectedIndexes[this.temporarySelectedIndexes.length - 1][2].push(k);
+			});
+		});
+	}
 	public hover(x: number, y: number) {
 		const hoverColor = new THREE.Color(colorStringToInt(this.colors.hoverColor));
 		const squreDimension = Math.floor(this.textureDimension / 8);
 		const color = hoverColor;
 		if (this.lastHoveredX !== x || this.lastHoveredY !== y) {
 			this.resetHover();
-			for (let i = 0; i < squreDimension; i++) {
-				for (let j = 0; j < squreDimension; j++) {
-					const k = ((y * squreDimension * this.textureDimension) + (i * this.textureDimension) + (x * (squreDimension) + j))
-					this.setPixel(color, k);
-					this.tempBufferIndexes.push(k);
-				}
-			}
+			this.getTextureSquareIndexes(x, y).forEach((k) => { 
+				this.setPixel(color, k);
+				this.temporaryHoverIndexes.push(k);
+			});
 			this.lastHoveredX = x;
 			this.lastHoveredY = y;
 			if (this.boardMaterial) {
@@ -190,17 +214,32 @@ export default class Chessboard {
 
 	public resetHover() {
 		const originalColor = this.boardOriginalColorsMap?.get(`${this.lastHoveredX},${this.lastHoveredY}`);
-		if (0 < this.tempBufferIndexes.length && originalColor) {
-			for (const i of this.tempBufferIndexes) {
+		if (0 < this.temporaryHoverIndexes.length && originalColor) {
+			for (const i of this.temporaryHoverIndexes) {
 				this.setPixel(originalColor, i);
 			}
-			this.tempBufferIndexes = [];
+			this.temporaryHoverIndexes = [];
 			if (this.boardMaterial) {
 				this.boardMaterial.map = this.generateDataTextureFromBitmap();
 			}
 			this.lastHoveredX = -1;
 			this.lastHoveredY = -1;
 		}
+	}
+
+	public resetSelected() {
+		this.temporarySelectedIndexes.forEach(([x, y, indexes]) => { 
+			const originalColor = this.boardOriginalColorsMap?.get(`${x},${y}`);
+			if (0 < indexes.length && originalColor) {
+				for (const i of indexes) {
+					this.setPixel(originalColor, i);
+				}
+			}
+			if (this.boardMaterial) { 
+				this.boardMaterial.map = this.generateDataTextureFromBitmap();
+			}
+			this.temporarySelectedIndexes = [];
+		});
 	}
 	
 
@@ -224,6 +263,24 @@ export default class Chessboard {
 
 	public getGameObject(position: THREE.Vector2): IEGameObject | null {
 		return this.gameObjects[position.x][position.y];
+	}
+
+	public moveObject(fromSquare: THREE.Vector2, toSquare: THREE.Vector2) {
+		const gameObjectFrom = this.getGameObject(fromSquare);
+		if (!gameObjectFrom) throw new Error("Cannot move from an empty square");
+		const gameObjectTo = this.getGameObject(toSquare);
+		if (gameObjectTo && gameObjectFrom.getPlayerOwnership() === gameObjectTo.getPlayerOwnership()) throw new Error("Invalid movement");
+		const threeDFinalPosition = this.logicalPositionToRealPosition(toSquare);
+		const tween = new Tween(gameObjectFrom?.getMesh().position)
+			.to({
+				x: threeDFinalPosition.x,
+				y: threeDFinalPosition.y,
+				z: threeDFinalPosition.z,
+			})
+			.easing(Easing.Cubic.In)
+			.start();
+		this.gameObjects[fromSquare.x][fromSquare.y] = null;
+		this.gameObjects[toSquare.x][toSquare.y] = gameObjectFrom;
 	}
 
 }

@@ -1,3 +1,4 @@
+import { update as tweenUpdate } from "@tweenjs/tween.js";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Chessboard from "./chessboard";
@@ -53,10 +54,11 @@ const MESH_DIMENSION = 100;
 	orbit.maxAzimuthAngle = THREE.MathUtils.degToRad(45);
 	orbit.minAzimuthAngle = THREE.MathUtils.degToRad(-45);
 	orbit.enablePan = false;
-	const update = ()  => {
+	const update = (ms: number)  => {
 		renderer.render(scene, camera);
 		orbit.update();
+		tweenUpdate(ms);
 		requestAnimationFrame(update);
 	}
-	update();
+	update(0);
 })();

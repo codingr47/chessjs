@@ -18,16 +18,46 @@ export default class PlayerMouseController extends GameController {
 
 	private lastX: number = 0;
 	private lastY: number = 0;
+
+	private currentHoverBoardX = 0;
+	private currentHoverBoardY = 0;
+
+	private isPickingMode = false;
+
+	private currentlyPickedSquare: THREE.Vector2 | undefined;
+	private currentlySelectedSquares: THREE.Vector2[];
 	
 	constructor({ chessboard, ownership, scene, pointerColor, displayPort }: GameControllerProps & PlayerMouseControllerProps) {
 		super({ chessboard, ownership, scene });
 		this.pointerColor = pointerColor;
 		this.domDisplayElement = displayPort;
+		this.currentlySelectedSquares = [];
 		this.createDebugSphere();
 		this.initializeMouseMove();
+		this.initalizeMouseClick();
 		
 	}
-
+	private initalizeMouseClick() {
+		this.domDisplayElement.addEventListener("click", () => { 
+			const gameObject = this.chessboard.getGameObject(new THREE.Vector2(this.currentHoverBoardX, this.currentHoverBoardY));
+			if (!this.isPickingMode && gameObject && this.ownership === gameObject.getPlayerOwnership()) {
+				this.currentlyPickedSquare = new THREE.Vector2(this.currentHoverBoardX, this.currentHoverBoardY);
+				this.isPickingMode = true;
+				this.chessboard.resetHover();
+				const availableMoves = gameObject.gerAvailableMoves();
+				this.currentlySelectedSquares = availableMoves;
+				this.chessboard.select(availableMoves);
+			} else {
+				const destinationSquare = this.currentlySelectedSquares.find(({ x, y}) => x === this.currentHoverBoardX && y === this.currentHoverBoardY);
+				if (destinationSquare && this.currentlyPickedSquare) {
+					this.chessboard.moveObject(this.currentlyPickedSquare, destinationSquare);
+				} 
+				this.isPickingMode = false;
+				this.currentlySelectedSquares = [];
+				this.chessboard.resetSelected();
+			}
+		})
+	}
 	private initializeMouseMove() {
 			this.lastX = 0;
 			this.lastY = 0;
@@ -54,14 +84,18 @@ export default class PlayerMouseController extends GameController {
 				if (7 < boardHoverY) {
 					boardHoverY = 7;
 				} 
+				this.currentHoverBoardX = boardHoverX;
+				this.currentHoverBoardY = boardHoverY;
 				const gameObject = this.chessboard.getGameObject(new THREE.Vector2(boardHoverX, boardHoverY));
-				if (this.ownership === gameObject?.getPlayerOwnership()) {
-					this.chessboard.hover(
-						boardHoverX,
-						boardHoverY,
-					);
-				} else {
-					this.chessboard.resetHover();
+				if (!this.isPickingMode) {
+					if (this.ownership === gameObject?.getPlayerOwnership()) {
+						this.chessboard.hover(
+							boardHoverX,
+							boardHoverY,
+						);
+					} else {
+						this.chessboard.resetHover();
+					}
 				}
 		});
 	}
