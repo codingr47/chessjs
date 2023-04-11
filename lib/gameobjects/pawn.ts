@@ -1,7 +1,14 @@
 import * as THREE from "three";
-import GameObject from "./index";
+import GameObject, { GameObjectProps } from "./index";
 
 export default class Pawn  extends GameObject {
+
+	private direction: 1 | -1 = 1;
+	constructor(props: GameObjectProps)  {
+		super(props);
+		this.direction = "player1" === this.getPlayerOwnership() ? 1 : -1; 
+	}
+
 	getMesh(): THREE.Mesh {
 		const mesh = this.refMesh;
 		if (mesh) {
@@ -15,9 +22,25 @@ export default class Pawn  extends GameObject {
 	}
 	gerAvailableMoves(): THREE.Vector2[] {
 		const movements: THREE.Vector2[] = [];
+		const forwardsSquare = new THREE.Vector2(this.currentBoardPosition.x, this.currentBoardPosition.y + this.direction);
+		if (!this.refChessboard.getGameObject(forwardsSquare)) {
+			movements.push(forwardsSquare);
+		}
+		const leftDiagonalSquare =  new THREE.Vector2(this.currentBoardPosition.x - 1, this.currentBoardPosition.y + this.direction);
+		const leftDiagonalSquareGameObject = this.refChessboard.getGameObject(leftDiagonalSquare);
+		if (leftDiagonalSquareGameObject && leftDiagonalSquareGameObject.getPlayerOwnership() !== this.getPlayerOwnership()) {
+			movements.push(leftDiagonalSquare);
+		}
+		const rightDiagonalSquare =  new THREE.Vector2(this.currentBoardPosition.x + 1, this.currentBoardPosition.y + this.direction);
+		const rightDiagonalSquareGameObject = this.refChessboard.getGameObject(rightDiagonalSquare);
+		if (rightDiagonalSquareGameObject && rightDiagonalSquareGameObject.getPlayerOwnership() !== this.getPlayerOwnership()) {
+			movements.push(rightDiagonalSquare);
+		}
 		if (this.initialBoardPosition.equals(this.currentBoardPosition)) {
-			movements.push(new THREE.Vector2(this.currentBoardPosition.x, this.currentBoardPosition.y + 1));
-			movements.push(new THREE.Vector2(this.currentBoardPosition.x, this.currentBoardPosition.y + 2));
+			const forwardsForwardsSquare = new THREE.Vector2(this.currentBoardPosition.x, this.currentBoardPosition.y + (this.direction * 2));
+			if (!this.refChessboard.getGameObject(forwardsForwardsSquare)) {
+				movements.push(forwardsForwardsSquare);
+			}
 		}
 		return movements;
 	}

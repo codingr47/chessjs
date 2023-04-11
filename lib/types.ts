@@ -10,7 +10,7 @@ export type GameControllerProps  = {
 }
 
 export interface IEGameObject {
-	moveTo(destination: THREE.Vector2): void;
+	moveTo(destination: THREE.Vector2, tween?: boolean): void;
 	getAbsolutePosition(): THREE.Vector3;
 	getMesh(): THREE.Mesh;
 	gerAvailableMoves(): THREE.Vector2[];

@@ -1,3 +1,4 @@
+import { Easing, Tween } from "@tweenjs/tween.js";
 import * as THREE from "three";
 import Chessboard from "../chessboard";
 import { IEGameObject, PlayerOwnership } from "../types";
@@ -11,8 +12,8 @@ export type GameObjectProps = {
 };
 export default abstract class GameObject  implements IEGameObject{
 	
-	private refChessboard: Chessboard;
 	private ownership: PlayerOwnership;
+	protected refChessboard: Chessboard;
 	protected refMesh: THREE.Mesh | undefined;
 	protected color: THREE.Color;
 	protected initialBoardPosition: THREE.Vector2;
@@ -28,9 +29,20 @@ export default abstract class GameObject  implements IEGameObject{
 		scene.add(mesh);
 		this.moveTo(this.initialBoardPosition);
 	}
-	moveTo(destination: THREE.Vector2) {
+	moveTo(destination: THREE.Vector2, tween?: boolean) {
 		const threeDSpaceGameObjectPosition = this.transformPosition(this.refChessboard.logicalPositionToRealPosition(destination));
-		this.getMesh().position.set(threeDSpaceGameObjectPosition.x, threeDSpaceGameObjectPosition.y, threeDSpaceGameObjectPosition.z);
+		if (tween) {
+			new Tween(this.getMesh().position)
+				.to({
+					x: threeDSpaceGameObjectPosition.x,
+					y: threeDSpaceGameObjectPosition.y,
+					z: threeDSpaceGameObjectPosition.z,
+				})
+				.easing(Easing.Cubic.In)
+				.start();
+		} else {
+			this.getMesh().position.set(threeDSpaceGameObjectPosition.x, threeDSpaceGameObjectPosition.y, threeDSpaceGameObjectPosition.z);
+		}
 		this.currentBoardPosition = destination;
 	}
 	getAbsolutePosition(): THREE.Vector3 {

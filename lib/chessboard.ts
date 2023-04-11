@@ -270,15 +270,7 @@ export default class Chessboard {
 		if (!gameObjectFrom) throw new Error("Cannot move from an empty square");
 		const gameObjectTo = this.getGameObject(toSquare);
 		if (gameObjectTo && gameObjectFrom.getPlayerOwnership() === gameObjectTo.getPlayerOwnership()) throw new Error("Invalid movement");
-		const threeDFinalPosition = this.logicalPositionToRealPosition(toSquare);
-		const tween = new Tween(gameObjectFrom?.getMesh().position)
-			.to({
-				x: threeDFinalPosition.x,
-				y: threeDFinalPosition.y,
-				z: threeDFinalPosition.z,
-			})
-			.easing(Easing.Cubic.In)
-			.start();
+		gameObjectFrom.moveTo(toSquare, true);
 		this.gameObjects[fromSquare.x][fromSquare.y] = null;
 		this.gameObjects[toSquare.x][toSquare.y] = gameObjectFrom;
 	}
