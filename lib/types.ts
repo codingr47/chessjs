@@ -15,8 +15,13 @@ export interface IEGameObject {
 	getMesh(): THREE.Mesh;
 	gerAvailableMoves(): THREE.Vector2[];
 	getPlayerOwnership(): PlayerOwnership;
+	destroy(): Promise<void>;
 }
 
 export interface IEGameController {
 	waitForPlayerMove(): Promise<void>;
+}
+
+export interface IEGameMode {
+	main(): Promise<void>;
 }

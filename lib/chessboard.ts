@@ -273,6 +273,9 @@ export default class Chessboard {
 		gameObjectFrom.moveTo(toSquare, true);
 		this.gameObjects[fromSquare.x][fromSquare.y] = null;
 		this.gameObjects[toSquare.x][toSquare.y] = gameObjectFrom;
+		if (gameObjectTo) {
+			gameObjectTo.destroy();
+		}
 	}
 
 }

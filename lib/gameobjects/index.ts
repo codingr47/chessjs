@@ -18,6 +18,7 @@ export default abstract class GameObject  implements IEGameObject{
 	protected color: THREE.Color;
 	protected initialBoardPosition: THREE.Vector2;
 	protected currentBoardPosition: THREE.Vector2;
+	protected refScene: THREE.Scene;
 
 	constructor({ scene, initialBoardPosition, chessboard, color, playerOwnership }: GameObjectProps)  {
 		this.refChessboard = chessboard;
@@ -25,6 +26,7 @@ export default abstract class GameObject  implements IEGameObject{
 		this.initialBoardPosition = initialBoardPosition;
 		this.currentBoardPosition = this.initialBoardPosition;
 		this.ownership = playerOwnership;
+		this.refScene = scene;
 		const mesh = this.getMesh();
 		scene.add(mesh);
 		this.moveTo(this.initialBoardPosition);
@@ -52,6 +54,9 @@ export default abstract class GameObject  implements IEGameObject{
 	}
 	getPlayerOwnership(): PlayerOwnership {
 		return this.ownership;
+	}
+	async destroy(): Promise<void> {
+		this.refScene.remove(this.getMesh());
 	}
 	abstract getMesh(): THREE.Mesh;
 	abstract gerAvailableMoves(): THREE.Vector2[];
