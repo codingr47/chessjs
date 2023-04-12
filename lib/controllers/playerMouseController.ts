@@ -116,8 +116,18 @@ export default class PlayerMouseController extends GameController {
 		this.ownership = ownership;
 	}
 
-	async waitForPlayerMove(): Promise<void> {
-
+	waitForPlayerMove(): Promise<void> {
+		return new Promise((res, rej) => { 
+			console.log("hi");
+			const handler = this.chessboard.on("move", (e) => { 
+				if (e.err) {
+					rej(new Error("Player cannot move !"));
+				} else {
+					res();
+				}
+				this.chessboard.off("move", handler);
+			});
+		});
 	}
 	
 }

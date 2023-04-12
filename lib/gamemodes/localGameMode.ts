@@ -19,7 +19,10 @@ export default class LocalGameMode extends BaseGameMode {
 		}
 	}
 	async main(): Promise<void> {
-		return sleep(1000);
+		await this.mouseController?.waitForPlayerMove();
+		this.mouseController?.setPlayerOwnership("player2");
+		await this.mouseController?.waitForPlayerMove();
+		this.mouseController?.setPlayerOwnership("player1");
 	}
 	
 }

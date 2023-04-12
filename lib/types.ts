@@ -24,4 +24,5 @@ export interface IEGameController {
 
 export interface IEGameMode {
 	main(): Promise<void>;
+	run(): Promise<void>;
 }

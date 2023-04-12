@@ -43,8 +43,6 @@ export default abstract class BaseGameMode implements IEGameMode {
 		this.initChessboard();
 		this.initRenderer(props.rendererBackgorundColor);
 		this.initOrbit();
-		
-		this.mainLoop();
 	}
 
 	private initScene() {
@@ -116,5 +114,9 @@ export default abstract class BaseGameMode implements IEGameMode {
 
 
 	abstract main(): Promise<void>;
+
+	public async run() {
+		return this.mainLoop();
+	}
 
 }

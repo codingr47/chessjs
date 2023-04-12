@@ -1,7 +1,8 @@
 import * as THREE from "three";
 import { Easing, Tween } from "@tweenjs/tween.js";
+import { v4 as uuidGenerate } from "uuid";
 import Pawn from "./gameobjects/pawn";
-import { IEGameObject } from "./types";
+import { IEGameObject, PlayerOwnership } from "./types";
 import { colorStringToInt } from "./utils";
 
 export type Colors = {
@@ -19,6 +20,20 @@ export type ChessboardOptions = {
 	colors: Colors;
 }
 
+
+export type EventCallbackType = "move";
+
+export type EventArguments = {
+	type: EventCallbackType;
+	ownership: PlayerOwnership;
+	err?: string;
+	
+}
+export type EventCallbackFunctor = { uuid: string; cb: (e: EventArguments) => void };
+
+export type EventCallbacksStore = {
+	[k in EventCallbackType]?: EventCallbackFunctor[];
+}
 
 export default class Chessboard {
 
@@ -47,6 +62,8 @@ export default class Chessboard {
 	private lastHoveredY: number = 0;
 
 	private gameObjects: (IEGameObject | null)[][];
+
+	private callbacks: EventCallbacksStore  = {};
 
 
 	constructor(scene: THREE.Scene, { meshDimension, textureDimension, colors }: ChessboardOptions) {
@@ -275,6 +292,30 @@ export default class Chessboard {
 		this.gameObjects[toSquare.x][toSquare.y] = gameObjectFrom;
 		if (gameObjectTo) {
 			gameObjectTo.destroy();
+		}
+		this.callbacks["move"]?.forEach(({ cb }) => { 
+			cb({
+				ownership: gameObjectFrom.getPlayerOwnership(),
+				type: "move",
+			});
+		})
+		
+	}
+
+	public on(type: EventCallbackType, cb: EventCallbackFunctor["cb"]) {
+		if (!this.callbacks[type]) {
+			this.callbacks[type] = [];
+		}
+		const uuid = uuidGenerate(); 
+		this.callbacks[type]?.push({
+			uuid,
+			cb,
+		});	
+		return uuid;
+	}
+	public off(type: EventCallbackType, uuidToRemove: string) {
+		if (this.callbacks[type]) {
+			this.callbacks[type] = this.callbacks[type]?.filter(({ uuid }) => uuid  !== uuidToRemove);
 		}
 	}
 

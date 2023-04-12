@@ -18,15 +18,17 @@
   },
   "homepage": "https://github.com/codingr47/chessjs#readme",
   "dependencies": {
+    "@tweenjs/tween.js": "19.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "three": "^0.150.1",
-    "@tweenjs/tween.js": "19.0.0"
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/react": "^16.9.11",
     "@types/react-dom": "^16.9.18",
     "@types/three": "^0.149.0",
+    "@types/uuid": "^9.0.1",
     "cross-env": "^7.0.2",
     "css-loader": "^3.1.0",
     "ts-loader": "^9.4.1",
