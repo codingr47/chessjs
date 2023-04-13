@@ -5,6 +5,7 @@ import Pawn from "./gameobjects/pawn";
 import { IEGameObject, PlayerOwnership } from "./types";
 import { colorStringToInt } from "./utils";
 import Rook from "./gameobjects/rook";
+import Knight from "./gameobjects/knight";
 
 export type Colors = {
 	player1Color: string;
@@ -221,6 +222,42 @@ export default class Chessboard {
 			playerOwnership: "player2"
 		});
 		this.gameObjects[7][7] = rightRookPlayer2;
+
+		const leftKnightPlayer1 = new Knight({
+			color: new THREE.Color(this.colors.player1Color2),
+			chessboard: this,
+			initialBoardPosition: new THREE.Vector2(1, 0),
+			scene: this.sceneRef,
+			playerOwnership: "player1"
+		});
+		this.gameObjects[1][0] = leftKnightPlayer1;
+
+		const rightKnightPlayer1 = new Knight({
+			color: new THREE.Color(this.colors.player1Color2),
+			chessboard: this,
+			initialBoardPosition: new THREE.Vector2(6, 0),
+			scene: this.sceneRef,
+			playerOwnership: "player1"
+		});
+		this.gameObjects[6][0] = rightKnightPlayer1;
+
+		const leftKnightPlayer2 = new Knight({
+			color: new THREE.Color(this.colors.player2Color2),
+			chessboard: this,
+			initialBoardPosition: new THREE.Vector2(1, 7),
+			scene: this.sceneRef,
+			playerOwnership: "player2"
+		});
+		this.gameObjects[1][7] = leftKnightPlayer2;
+
+		const rightKnightPlayer2 = new Knight({
+			color: new THREE.Color(this.colors.player2Color2),
+			chessboard: this,
+			initialBoardPosition: new THREE.Vector2(6, 7),
+			scene: this.sceneRef,
+			playerOwnership: "player2"
+		});
+		this.gameObjects[6][7] = rightKnightPlayer2;
 	}
 
 	private getTextureSquareIndexes(x: number, y: number) {
