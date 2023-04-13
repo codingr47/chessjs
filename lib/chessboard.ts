@@ -4,6 +4,7 @@ import { v4 as uuidGenerate } from "uuid";
 import Pawn from "./gameobjects/pawn";
 import { IEGameObject, PlayerOwnership } from "./types";
 import { colorStringToInt } from "./utils";
+import Rook from "./gameobjects/rook";
 
 export type Colors = {
 	player1Color: string;
@@ -187,6 +188,39 @@ export default class Chessboard {
 			});
 			this.gameObjects[x][6] = pawnPlayer2;
 		}
+		const leftRookPlayer1 = new Rook({
+			color: new THREE.Color(this.colors.player1Color2),
+			chessboard: this,
+			initialBoardPosition: new THREE.Vector2(0, 0),
+			scene: this.sceneRef,
+			playerOwnership: "player1"
+		});
+		this.gameObjects[0][0] = leftRookPlayer1;
+		const rightRookPlayer1 = new Rook({
+			color: new THREE.Color(this.colors.player1Color2),
+			chessboard: this,
+			initialBoardPosition: new THREE.Vector2(7, 0),
+			scene: this.sceneRef,
+			playerOwnership: "player1"
+		});
+		this.gameObjects[7][0] = rightRookPlayer1;
+
+		const leftRookPlayer2 = new Rook({
+			color: new THREE.Color(this.colors.player2Color2),
+			chessboard: this,
+			initialBoardPosition: new THREE.Vector2(0, 7),
+			scene: this.sceneRef,
+			playerOwnership: "player2"
+		});
+		this.gameObjects[0][7] = leftRookPlayer2;
+		const rightRookPlayer2 = new Rook({
+			color: new THREE.Color(this.colors.player2Color2),
+			chessboard: this,
+			initialBoardPosition: new THREE.Vector2(7, 7),
+			scene: this.sceneRef,
+			playerOwnership: "player2"
+		});
+		this.gameObjects[7][7] = rightRookPlayer2;
 	}
 
 	private getTextureSquareIndexes(x: number, y: number) {
@@ -279,6 +313,12 @@ export default class Chessboard {
 	}
 
 	public getGameObject(position: THREE.Vector2): IEGameObject | null {
+		if (7 < position.x || 0 > position.x ) { 
+			return null;
+		}
+		if (7 < position.y || 0 > position.y ) { 
+			return null;
+		}
 		return this.gameObjects[position.x][position.y];
 	}
 

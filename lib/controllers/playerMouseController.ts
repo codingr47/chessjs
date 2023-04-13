@@ -118,7 +118,6 @@ export default class PlayerMouseController extends GameController {
 
 	waitForPlayerMove(): Promise<void> {
 		return new Promise((res, rej) => { 
-			console.log("hi");
 			const handler = this.chessboard.on("move", (e) => { 
 				if (e.err) {
 					rej(new Error("Player cannot move !"));
