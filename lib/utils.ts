@@ -1,3 +1,8 @@
+import { Vector2 } from "./types";
+
+export const isPositionInGameBoardBounds = (v: Vector2): boolean => {
+	return v.X >= 1 && v.X <= 8 && v.Y >=1 && v.Y <= 8;
+}
 export const colorStringToInt = (color: string) => { 
 	return parseInt(color.substring(1), 16);
 }
