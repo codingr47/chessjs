@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import GameController from ".";
-import { GameControllerProps, PlayerOwnership } from "../types";
-import { colorStringToInt } from "../utils";
+import { GameControllerProps, PlayerOwnership } from "../../../sdk/lib/types";
+import { colorStringToInt } from "../../../sdk/lib/utils";
 
 const EPSILON_DELTA = 0.7;
 

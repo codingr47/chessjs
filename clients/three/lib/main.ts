@@ -2,7 +2,7 @@ import { update as tweenUpdate } from "@tweenjs/tween.js";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Chessboard from "./chessboard";
-import PlayerMouseController from "./controllers/playerMouseController";
+import PlayerMouseController from "../clients/three/controllers/playerMouseController";
 import LocalGameMode from "./gamemodes/localGameMode";
 
 const TEXTURE_DIMENSION = 400;

@@ -1,7 +1,7 @@
 import { Easing, Tween } from "@tweenjs/tween.js";
 import * as THREE from "three";
 import Chessboard from "../chessboard";
-import { IEGameObject, PlayerOwnership } from "../types";
+import { IEGameObject, PlayerOwnership } from "../../../../sdk/lib/types";
 
 export type GameObjectProps = { 
 	scene:THREE.Scene;

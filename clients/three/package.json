@@ -1,7 +1,7 @@
 {
-  "name": "chessjs",
+  "name": "@chessjs/three",
   "version": "1.0.0",
-  "description": "A chess game written with Typescript and three.js",
+  "description": "A chess game client written with Typescript and three.js",
   "main": "lib/index.ts",
   "scripts": {
     "test": "test",

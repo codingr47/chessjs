@@ -1,5 +1,5 @@
-import Chessboard from "../chessboard";
-import { GameControllerProps, IEGameController, PlayerOwnership } from "../types";
+import Chessboard from "../../../lib/chessboard";
+import { GameControllerProps, IEGameController, PlayerOwnership } from "../../../sdk/lib/types";
 
 export default abstract class GameController implements IEGameController {
 	

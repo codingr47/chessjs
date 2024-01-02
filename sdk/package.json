@@ -1,0 +1,27 @@
+{
+  "name": "@chessjs/sdk",
+  "version": "1.0.0",
+  "description": "A chess game SDK written with Typescript to create a JS api for chess applications",
+  "main": "lib/sdk.ts",
+  "scripts": {
+    "test": "test",
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codingr47/chessjs.git"
+  },
+  "author": "Gil Reich",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/codingr47/chessjs/issues"
+  },
+  "homepage": "https://github.com/codingr47/chessjs#readme",
+  "dependencies": {
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/uuid": "^9.0.1",
+    "cross-env": "^7.0.2",
+    "typescript": "~4.9.3"
+  }
+}

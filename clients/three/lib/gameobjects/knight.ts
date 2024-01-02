@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import GameObject, { GameObjectProps } from "./index";
-import { inBoardBounds } from "../utils";
+import { inBoardBounds } from "../../../../sdk/lib/utils";
 
 export default class Knight  extends GameObject {
 

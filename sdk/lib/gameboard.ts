@@ -1,6 +1,6 @@
 import { v4 as uuid } from "uuid";
 import { GameConfigurationObject, PieceSymbolString, PlayerOwnership, Vector2, defaultGameConfiguration } from "./types";
-import { IEGameObject, gameObjectsMap } from "./gameobjects2";
+import { IEGameObject, gameObjectsMap } from "./gameobjects";
 import { GAMEOBJECT_DOESNT_EXIST, INVALID_MOVE } from "./errors";
 
 type GameObject = null | IEGameObject;
@@ -126,6 +126,15 @@ class GameBoard {
 		}
 		this.gameObjects[to.X][to.Y] = fromGameObject;
 	}
+
+	public getPlayerMoves(player: PlayerOwnership): Vector2[] {
+		const playerGameObjects = Array.from(this.mapGameObjects.values()).filter((g) => { 
+			return g.gameObject.getPlayerOwnership() == player;
+		});
+		return playerGameObjects.map((g) => { 
+			return g.gameObject.getAvailableMoves();
+		}).flat();
+	} 
 
 	
 }

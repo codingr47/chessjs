@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import Chessboard from "./chessboard";
+import Chessboard from "../../clients/three/lib/chessboard";
 
 export type PlayerOwnership = "player1" | "player2";
 

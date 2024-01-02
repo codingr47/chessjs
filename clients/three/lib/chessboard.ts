@@ -2,8 +2,8 @@ import * as THREE from "three";
 import { Easing, Tween } from "@tweenjs/tween.js";
 import { v4 as uuidGenerate } from "uuid";
 import Pawn from "./gameobjects/pawn";
-import { IEGameObject, PlayerOwnership } from "./types";
-import { colorStringToInt } from "./utils";
+import { IEGameObject, PlayerOwnership } from "../../../sdk/lib/types";
+import { colorStringToInt } from "../../../sdk/lib/utils";
 import Rook from "./gameobjects/rook";
 import Knight from "./gameobjects/knight";
 

@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import { update as tweenUpdate } from "@tweenjs/tween.js";
-import { IEGameMode } from "../types";
+import { IEGameMode } from "../../../../sdk/lib/types";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import theme from "../colors.json"
+import theme from "../../../../lib/colors.json"
 import Chessboard from "../chessboard";
 
 export type GameModeProps = {

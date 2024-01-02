@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import BaseGameMode, { GameModeProps } from ".";
-import PlayerMouseController from "../controllers/playerMouseController";
-import { sleep } from "../utils";
+import PlayerMouseController from "../../clients/three/controllers/playerMouseController";
+import { sleep } from "../../../../sdk/lib/utils";
 
 export default class LocalGameMode extends BaseGameMode {
 	mouseController: PlayerMouseController | undefined;
