@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import { GameConfigurationObject, PieceSymbolString, PlayerOwnership, Vector2, defaultGameConfiguration } from "./types";
+import { BaseEventArgs, GameConfigurationObject, GameEventNames, GameEventNamesArgsMap, PieceSymbolString, PlayerOwnership, Vector2, defaultGameConfiguration } from "./types";
 import { IEGameObject, gameObjectsMap } from "./gameobjects";
 import { GAMEOBJECT_DOESNT_EXIST, INVALID_MOVE } from "./errors";
 
@@ -14,11 +14,13 @@ class GameBoard {
 	private gameObjects: GameObject[][];
 	private mapGameObjects: Map<string, GameObjectMapObject>;
 	private history: HistoryStateObject[];
+	private callbacks: { [k in GameEventNames]?: ((cb: GameEventNamesArgsMap[k]) => void)[] };
 
-	constructor(configuration: GameConfigurationObject[] | undefined) {
+	constructor(configuration?: GameConfigurationObject[] | undefined) {
 		this.gameObjects = [];
 		this.history = [];
 		this.mapGameObjects = new Map();
+		this.callbacks = {};
 		this.initializeGameObjects();
 		this.loadBoard(configuration);
 	}
@@ -27,6 +29,10 @@ class GameBoard {
 		for(const conf of from) {
 			this.spawnGameObject(new Vector2(conf.x, conf.y), conf.type, conf.ownership);
 		}
+		this.notify("GameStarted", { 
+			...this.getBaseEventObject(),
+			configuration: from 
+		});
 	} 
 
 	private spawnGameObject(initialPosition: Vector2, type: PieceSymbolString, ownership: PlayerOwnership) {
@@ -76,6 +82,12 @@ class GameBoard {
 		}
 	}
 
+	private getBaseEventObject(): BaseEventArgs {
+		return {
+			time: new Date().toISOString(),
+		};
+	}
+
 	public hasGameObject(i: Vector2 | string): boolean {
 		try {
 			this.getGameObject(i);
@@ -121,11 +133,24 @@ class GameBoard {
 			toGameObject = this.getGameObject(to);
 			this.gameObjects[to.X][to.Y] = null;
 			this.mapGameObjects.delete(toGameObject.getId());
+			this.notify("PieceDestroyed", {
+				...this.getBaseEventObject(),
+				ownership: toGameObject.getPlayerOwnership(),
+				position: to,
+				symbolType: toGameObject.getPieceSymbol(),
+			});
 		} catch (err) {
 			
 		}
 		this.gameObjects[to.X][to.Y] = fromGameObject;
+		this.notify("PieceMoved", {
+			...this.getBaseEventObject(),
+			from,
+			to,
+			symbolType: fromGameObject.getPieceSymbol(),
+		});
 	}
+
 
 	public getPlayerMoves(player: PlayerOwnership): Vector2[] {
 		const playerGameObjects = Array.from(this.mapGameObjects.values()).filter((g) => { 
@@ -135,6 +160,22 @@ class GameBoard {
 			return g.gameObject.getAvailableMoves();
 		}).flat();
 	} 
+
+	public on<T extends GameEventNames>(eventName: T, cb: ((d: GameEventNamesArgsMap[T]) => void)) {
+		if (!this.callbacks[eventName]) {
+			this.callbacks[eventName] = [];
+		}
+		this.callbacks[eventName]?.push(cb);
+	}
+
+	private notify<T extends GameEventNames>(eventName: T, data: GameEventNamesArgsMap[T]) {
+		const callbacks = this.callbacks[eventName];
+		if (callbacks) {
+			callbacks.forEach((cb) =>  {
+				cb(data);
+			});
+		}
+	}
 
 	
 }

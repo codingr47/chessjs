@@ -1,4 +1,3 @@
-import * as THREE from "three";
 import Chessboard from "../../clients/three/lib/chessboard";
 
 export type PlayerOwnership = "player1" | "player2";
@@ -8,17 +7,17 @@ export type PieceSymbolString = "Pawn" | "Knight" | "Rook" | "Bishop" | "King" |
 export type GameControllerProps  = {
 	chessboard: Chessboard;
 	ownership: PlayerOwnership;
-	scene: THREE.Scene;
+	// scene: THREE.Scene;
 }
 
-export interface IEGameObject {
-	moveTo(destination: THREE.Vector2, tween?: boolean): void;
-	getAbsolutePosition(): THREE.Vector3;
-	getMesh(): THREE.Mesh;
-	gerAvailableMoves(): THREE.Vector2[];
-	getPlayerOwnership(): PlayerOwnership;
-	destroy(): Promise<void>;
-}
+// export interface IEGameObject {
+// 	moveTo(destination: THREE.Vector2, tween?: boolean): void;
+// 	getAbsolutePosition(): THREE.Vector3;
+// 	getMesh(): THREE.Mesh;
+// 	gerAvailableMoves(): THREE.Vector2[];
+// 	getPlayerOwnership(): PlayerOwnership;
+// 	destroy(): Promise<void>;
+// }
 
 export interface IEGameController {
 	waitForPlayerMove(): Promise<void>;
@@ -30,7 +29,7 @@ export interface IEGameMode {
 }
 
 export type GameMemoryState = {
-	position: Vec2;
+	position: Vector2;
 	ownership: PlayerOwnership;
 	pieceType: PieceSymbolString;
 }[];
@@ -114,7 +113,6 @@ const getQueenConfigurationObject = (position: Vector2, ownership: PlayerOwnersh
 };
 
 
-
 export const defaultGameConfiguration: GameConfigurationObject[] = [
 	getRookConfigurationObject(new Vector2(1, 1), "player2"),
 	getKnightConfigurationObject(new Vector2(2, 1), "player2"),
@@ -152,3 +150,38 @@ export const defaultGameConfiguration: GameConfigurationObject[] = [
 	getKnightConfigurationObject(new Vector2(7, 8), "player1"),
 	getRookConfigurationObject(new Vector2(8, 8), "player1"),
 ];
+
+export type GameEventNames = "GameStarted" | "PieceDestroyed" | "Spawn" | "PieceMoved";
+
+
+export interface BaseEventArgs  {
+	time: string;
+}
+
+export interface GameStartedArgs extends BaseEventArgs {
+	configuration: GameConfigurationObject[];
+}
+
+export interface PieceDestroyedArgs extends BaseEventArgs {
+	position: Vector2;
+	ownership: PlayerOwnership;
+	symbolType: PieceSymbolString;
+}
+
+export interface SpawnArgs extends PieceDestroyedArgs {
+
+}
+
+export interface PieceMovedArgs extends BaseEventArgs {
+	from: Vector2;
+	to: Vector2;
+	symbolType: PieceSymbolString;
+}
+
+export type GameEventNamesArgsMap =  {
+	GameStarted: GameStartedArgs;
+	PieceMoved: PieceMovedArgs;
+	PieceDestroyed: PieceDestroyedArgs;
+	Spawn: SpawnArgs;
+}
+
