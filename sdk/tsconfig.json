@@ -12,12 +12,11 @@
 		"forceConsistentCasingInFileNames": true,
 		"noUnusedParameters": true,
 		"skipLibCheck": true,
-		"types": [
-			"node"
-		],
+		"types": ["jest", "node"],
 		"jsx": "react",
 	},
 	"include": [
-		"./lib/**/*"
-]
+		"./lib/**/*",
+		"./__tests__/**/*"
+	]
 }
