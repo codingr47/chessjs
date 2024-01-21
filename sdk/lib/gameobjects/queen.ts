@@ -1,4 +1,4 @@
-import { BaseGameObject } from ".";
+import { BaseGameObject } from "./base";
 
 export default class Queen extends BaseGameObject {
 	getAvailableMoves() {		

@@ -4,7 +4,7 @@
   "description": "A chess game SDK written with Typescript to create a JS api for chess applications",
   "main": "lib/sdk.ts",
   "scripts": {
-    "test": "jest"
+    "test": "jest --verbose"
   },
   "repository": {
     "type": "git",

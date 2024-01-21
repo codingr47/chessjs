@@ -1,4 +1,4 @@
-import { BaseGameObject } from ".";
+import { BaseGameObject } from "./base";
 import { Vector2 } from "../types";
 import { isPositionInGameBoardBounds } from "../utils";
 

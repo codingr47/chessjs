@@ -1,4 +1,4 @@
-import { BaseGameObject } from ".";
+import { BaseGameObject } from "./base";
 import { isPositionInGameBoardBounds } from "../utils";
 
 export default class Knight extends BaseGameObject {

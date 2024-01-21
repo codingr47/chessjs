@@ -1,7 +1,8 @@
 import { v4 as uuid } from "uuid";
 import { BaseEventArgs, GameConfigurationObject, GameEventNames, GameEventNamesArgsMap, PieceSymbolString, PlayerOwnership, Vector2, defaultGameConfiguration } from "./types";
-import { IEGameObject, gameObjectsMap } from "./gameobjects";
+import { gameObjectsMap } from "./gameobjects";
 import { GAMEOBJECT_DOESNT_EXIST, INVALID_MOVE } from "./errors";
+import { IEGameObject } from "./gameobjects/base";
 
 type GameObject = null | IEGameObject;
 type GameObjectMapObject = { position: Vector2; gameObject: IEGameObject };
@@ -11,6 +12,9 @@ type HistoryStateObject = {
 };
 
 class GameBoard {
+	
+	private configuration?: GameConfigurationObject[];
+
 	private gameObjects: GameObject[][];
 	private mapGameObjects: Map<string, GameObjectMapObject>;
 	private history: HistoryStateObject[];
@@ -18,14 +22,15 @@ class GameBoard {
 
 	constructor(configuration?: GameConfigurationObject[] | undefined) {
 		this.gameObjects = [];
-		this.history = [];
+		this.history = [];	
 		this.mapGameObjects = new Map();
 		this.callbacks = {};
-		this.initializeGameObjects();
-		this.loadBoard(configuration);
+		this.configuration = configuration;
 	}
 
-	private loadBoard(from: GameConfigurationObject[] = defaultGameConfiguration) {
+	private loadBoard() {
+		this.initializeGameObjects();
+		const from = this.configuration || defaultGameConfiguration; 
 		for(const conf of from) {
 			this.spawnGameObject(new Vector2(conf.x, conf.y), conf.type, conf.ownership);
 		}
@@ -48,7 +53,7 @@ class GameBoard {
 	private initializeGameObjects(): void {
 		for (let y = 0; y<8; y++) {
 			for (let x = 0; x < 8; x++) {
-				if(!Array.isArray(this.gameObjects[x])) {
+				if(!Array.isArray(this.gameObjects[y])) {
 					this.gameObjects[y] = [];
 				}
 				this.gameObjects[y][x] = null;
@@ -72,6 +77,10 @@ class GameBoard {
 	}
 	private getGameObjectWithId(id: string): IEGameObject {
 		return this.getGameObjectMapObject(id).gameObject;
+	}
+	
+	public startGame() {
+		this.loadBoard();
 	}
 
 	public getGameObject(i: Vector2 | string): IEGameObject {
@@ -152,12 +161,19 @@ class GameBoard {
 	}
 
 
-	public getPlayerMoves(player: PlayerOwnership): Vector2[] {
-		const playerGameObjects = Array.from(this.mapGameObjects.values()).filter((g) => { 
+	public getPlayerMoves(player: PlayerOwnership, excludePiecesByType?: PieceSymbolString[]): { from: Vector2, to: Vector2 }[] {
+		let playerGameObjects = Array.from(this.mapGameObjects.values()).filter((g) => { 
 			return g.gameObject.getPlayerOwnership() == player;
 		});
+		if (excludePiecesByType) {
+			playerGameObjects = playerGameObjects.filter((g) => { 
+				return !excludePiecesByType.includes(g.gameObject.getPieceSymbol());
+			});
+		}
 		return playerGameObjects.map((g) => { 
-			return g.gameObject.getAvailableMoves();
+			return g.gameObject.getAvailableMoves().map(((move) => { 
+				return { from: g.position, to: move };
+			}));
 		}).flat();
 	} 
 

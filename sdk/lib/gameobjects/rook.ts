@@ -1,4 +1,4 @@
-import { BaseGameObject } from ".";
+import { BaseGameObject } from "./base";
 
 export default class Rook extends BaseGameObject {
 	getAvailableMoves() {		
