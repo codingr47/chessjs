@@ -1,8 +1,13 @@
 import { BaseGameObject } from "./base";
 import { isPositionInGameBoardBounds } from "../utils";
+import { PieceSymbolString } from "../types";
 
 export default class Knight extends BaseGameObject {
 	
+	public getPieceSymbol(): PieceSymbolString {
+		return "Knight";
+	}
+
 	getAvailableMoves() {		
 		const currentPosition = this.getPosition();
 		return [

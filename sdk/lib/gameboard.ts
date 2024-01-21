@@ -62,7 +62,7 @@ class GameBoard {
 	}
 
 	private getGameObjectWithVector2(position: Vector2): IEGameObject {
-		const gameObject = this.gameObjects[position.X][position.Y];
+		const gameObject = this.gameObjects[position.Y - 1][position.X - 1];
 		if (!gameObject) {
 			throw new Error(GAMEOBJECT_DOESNT_EXIST);
 		}
@@ -132,7 +132,7 @@ class GameBoard {
 		})) {
 			throw new Error(INVALID_MOVE);
 		}
-		this.gameObjects[from.X][from.X] = null;
+		this.gameObjects[from.Y - 1][from.X - 1] = null;
 		this.mapGameObjects.set(fromGameObject.getId(), {
 			gameObject: fromGameObject,
 			position: to,
@@ -140,7 +140,7 @@ class GameBoard {
 		let toGameObject: IEGameObject | undefined;
 		try {
 			toGameObject = this.getGameObject(to);
-			this.gameObjects[to.X][to.Y] = null;
+			this.gameObjects[to.Y - 1][to.X - 1] = null;
 			this.mapGameObjects.delete(toGameObject.getId());
 			this.notify("PieceDestroyed", {
 				...this.getBaseEventObject(),
@@ -151,7 +151,7 @@ class GameBoard {
 		} catch (err) {
 			
 		}
-		this.gameObjects[to.X][to.Y] = fromGameObject;
+		this.gameObjects[to.Y - 1][to.X - 1] = fromGameObject;
 		this.notify("PieceMoved", {
 			...this.getBaseEventObject(),
 			from,

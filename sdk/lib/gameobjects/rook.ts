@@ -1,6 +1,11 @@
+import { PieceSymbolString } from "../types";
 import { BaseGameObject } from "./base";
 
 export default class Rook extends BaseGameObject {
+
+	public getPieceSymbol(): PieceSymbolString {
+		return "Rook";
+	}
 	getAvailableMoves() {		
 		return [
 			...this.getLinearSteps(1, 0),

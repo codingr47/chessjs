@@ -1,7 +1,13 @@
 import { BaseGameObject } from "./base";
 import { isPositionInGameBoardBounds } from "../utils";
+import { PieceSymbolString } from "../types";
 
 export default class King extends BaseGameObject {
+	
+	public getPieceSymbol(): PieceSymbolString {
+		return "King";
+	}
+
 	getAvailableMoves() {		
 		const currentPosition = this.getPosition();
 		const otherPlayerMoves = this.refGameBoard.getPlayerMoves("player1" === this.getPlayerOwnership() ? "player2" : "player1", ["King"]);

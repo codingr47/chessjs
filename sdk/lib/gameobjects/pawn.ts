@@ -4,6 +4,7 @@ import { isPositionInGameBoardBounds } from "../utils";
 
 export default class Pawn extends BaseGameObject {
 
+
 	private getDirection(): number {
 		return "player1" === this.getPlayerOwnership() ? -1 : 1;
 	}
