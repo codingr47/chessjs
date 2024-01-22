@@ -45,7 +45,9 @@ export default class Pawn extends BaseGameObject {
 		) {
 			availableMoves.push(diagonalTwo);
 		}
-		return availableMoves;
+		return availableMoves.map((destPosition) => {
+			return [{ from: position, to: destPosition }];
+		});
 	}
 
 }

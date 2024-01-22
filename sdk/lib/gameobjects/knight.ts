@@ -19,16 +19,19 @@ export default class Knight extends BaseGameObject {
 			currentPosition.add(2 , -1),
 			currentPosition.add(-1 , 2),
 			currentPosition.add(-2 , 1),
-		].filter((position) => { 
-			if (!isPositionInGameBoardBounds(position)) {
+		].filter((potentialDestination) => { 
+			if (!isPositionInGameBoardBounds(potentialDestination)) {
 				return false;
 			}
-			if (this.refGameBoard.hasGameObject(position)) {
-				if (this.refGameBoard.getGameObject(position).getPlayerOwnership() == this.getPlayerOwnership()) {
+			if (this.refGameBoard.hasGameObject(potentialDestination)) {
+				if (this.refGameBoard.getGameObject(potentialDestination).getPlayerOwnership() == this.getPlayerOwnership()) {
 					return false;
 				}
 			}
 			return true;
-		});
+		})
+		.map((destPosition) => { 
+			return [{ from: currentPosition, to: destPosition }]
+		})
 	}
 }

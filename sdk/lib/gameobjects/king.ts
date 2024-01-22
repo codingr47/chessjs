@@ -20,21 +20,23 @@ export default class King extends BaseGameObject {
 			currentPosition.add(-1, -1),
 			currentPosition.add(-1,  0),
 			currentPosition.add(-1,  1),
-		].filter((position) => { 
-			if (!isPositionInGameBoardBounds(position)) {
+		].filter((potentialDestination) => { 
+			if (!isPositionInGameBoardBounds(potentialDestination)) {
 				return false;
 			}
-			if (this.refGameBoard.hasGameObject(position)) {
-				if (this.refGameBoard.getGameObject(position).getPlayerOwnership()  === this.getPlayerOwnership()) {
+			if (this.refGameBoard.hasGameObject(potentialDestination)) {
+				if (this.refGameBoard.getGameObject(potentialDestination).getPlayerOwnership()  === this.getPlayerOwnership()) {
 					return false;
 				}
 			}
 			if (otherPlayerMoves.find((otherPlayerMove) =>  {
-				return otherPlayerMove.to.equals(position)
+				return otherPlayerMove.find(({ to }) => { return to.equals(potentialDestination); });
 			})) {
 				return false;
 			}
 			return true;
+		}).map((destPosition) => { 
+			return [{ from: currentPosition, to: destPosition }];
 		});
 	}
 }

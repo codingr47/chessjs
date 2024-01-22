@@ -1,10 +1,10 @@
 import GameBoard from "../gameboard";
-import { PieceSymbolString, PlayerOwnership, Vector2 } from "../types";
+import { PieceSymbolString, PlayerMove, PlayerOwnership, Vector2 } from "../types";
 import { isPositionInGameBoardBounds } from "../utils";
 
 export interface IEGameObject {
 	getPosition(): Vector2;
-	getAvailableMoves(): Vector2[];
+	getAvailableMoves(): PlayerMove[];
 	getPlayerOwnership(): PlayerOwnership;
 	getId(): string;
 	getPieceSymbol(): PieceSymbolString;
@@ -25,7 +25,7 @@ export abstract class BaseGameObject implements IEGameObject {
 	public getPosition(): Vector2 {
 		return this.refGameBoard.getGameObjectPosition(this.id);
 	}
-	public getAvailableMoves(): Vector2[] { 
+	public getAvailableMoves(): PlayerMove[] { 
 		throw new Error("Not Implemented"); 
 	};
 	public getPlayerOwnership(): PlayerOwnership {
@@ -39,8 +39,8 @@ export abstract class BaseGameObject implements IEGameObject {
 		return "Pawn";
 	}
 
-	public getLinearSteps(incX: 1 | -1 | 0, incY: 1 | -1 | 0): Vector2[] {
-		const availableMoves: Vector2[] = [];
+	public getLinearSteps(incX: 1 | -1 | 0, incY: 1 | -1 | 0): PlayerMove[] {
+		const availableMoves: PlayerMove[] = [];
 		let currentPosition = this.getPosition();
 		currentPosition = currentPosition.add(incX, incY);
 		let continueLoop = isPositionInGameBoardBounds(currentPosition);
@@ -48,10 +48,10 @@ export abstract class BaseGameObject implements IEGameObject {
 			if (this.refGameBoard.hasGameObject(currentPosition)) {
 				continueLoop = false;
 				if (this.refGameBoard.getGameObject(currentPosition).getPlayerOwnership() != this.getPlayerOwnership()) {
-					availableMoves.push(currentPosition.clone());
+					availableMoves.push([{ from: this.getPosition(), to: currentPosition.clone()}]);
 				}
 			} else {
-				availableMoves.push(currentPosition.clone());
+				availableMoves.push([{ from: this.getPosition(), to: currentPosition.clone()}]);
 			}
 			currentPosition = currentPosition.add(incX, incY);
 		}	

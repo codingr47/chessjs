@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import { BaseEventArgs, GameConfigurationObject, GameEventNames, GameEventNamesArgsMap, PieceSymbolString, PlayerOwnership, Vector2, defaultGameConfiguration } from "./types";
+import { BaseEventArgs, GameConfigurationObject, GameEventNames, GameEventNamesArgsMap, PieceSymbolString, PlayerMove, PlayerOwnership, Vector2, defaultGameConfiguration } from "./types";
 import { gameObjectsMap } from "./gameobjects";
 import { GAMEOBJECT_DOESNT_EXIST, INVALID_MOVE } from "./errors";
 import { IEGameObject } from "./gameobjects/base";
@@ -127,8 +127,8 @@ class GameBoard {
 	public move(from: Vector2, to: Vector2) {
 		this.saveCurrentHistory();
 		const fromGameObject = this.getGameObject(from); 
-		if (!fromGameObject.getAvailableMoves().find((vectorDest) => { 
-			return vectorDest.X === to.X && vectorDest.Y === to.Y;
+		if (!fromGameObject.getAvailableMoves().find((playerMove) => { 
+			return playerMove.find(({ to: toDest }) => to.X === toDest.X && toDest.Y === to.Y);
 		})) {
 			throw new Error(INVALID_MOVE);
 		}
@@ -161,7 +161,7 @@ class GameBoard {
 	}
 
 
-	public getPlayerMoves(player: PlayerOwnership, excludePiecesByType?: PieceSymbolString[]): { from: Vector2, to: Vector2 }[] {
+	public getPlayerMoves(player: PlayerOwnership, excludePiecesByType?: PieceSymbolString[]): PlayerMove[] {
 		let playerGameObjects = Array.from(this.mapGameObjects.values()).filter((g) => { 
 			return g.gameObject.getPlayerOwnership() == player;
 		});
@@ -171,9 +171,7 @@ class GameBoard {
 			});
 		}
 		return playerGameObjects.map((g) => { 
-			return g.gameObject.getAvailableMoves().map(((move) => { 
-				return { from: g.position, to: move };
-			}));
+			return g.gameObject.getAvailableMoves();
 		}).flat();
 	} 
 

@@ -80,6 +80,11 @@ export type GameConfigurationObject = {
 	ownership: PlayerOwnership;
 }
 
+export type PlayerMove = {
+	from: Vector2;
+	to: Vector2;
+}[];
+
 const getGameObjectConfiguration = (position: Vector2, ownership: PlayerOwnership, type: PieceSymbolString): GameConfigurationObject => {
 	return {
 		x: position.X,
