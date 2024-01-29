@@ -1,4 +1,4 @@
-import { PieceSymbolString } from "../temp";
+import { PieceSymbolString } from "../types";
 import { BaseGameObject } from "./base";
 
 export default class Queen extends BaseGameObject {
