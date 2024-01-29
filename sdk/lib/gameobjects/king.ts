@@ -1,6 +1,6 @@
 import { BaseGameObject } from "./base";
 import { isPositionInGameBoardBounds } from "../utils";
-import { PieceSymbolString, Vector2 } from "../temp";
+import { PieceSymbolString, Vector2 } from "../types";
 
 export default class King extends BaseGameObject {
 	

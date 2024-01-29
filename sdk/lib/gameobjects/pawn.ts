@@ -1,5 +1,5 @@
 import { BaseGameObject } from "./base";
-import { Vector2 } from "../temp";
+import { Vector2 } from "../types";
 import { isPositionInGameBoardBounds } from "../utils";
 
 export default class Pawn extends BaseGameObject {

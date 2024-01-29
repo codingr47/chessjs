@@ -1,5 +1,5 @@
 import { BaseGameObject } from "./base";
-import { PieceSymbolString, Vector2 } from "../temp";
+import { PieceSymbolString, Vector2 } from "../types";
 
 export class Bishop extends BaseGameObject {
 	

@@ -1,5 +1,5 @@
 import GameBoard from "../gameboard";
-import { PieceSymbolString, PlayerMove, PlayerOwnership, Vector2 } from "../temp";
+import { PieceSymbolString, PlayerMove, PlayerOwnership, Vector2 } from "../types";
 import { isPositionInGameBoardBounds } from "../utils";
 
 export interface IEGameObject {
