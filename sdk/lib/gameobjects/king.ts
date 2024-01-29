@@ -1,6 +1,6 @@
 import { BaseGameObject } from "./base";
 import { isPositionInGameBoardBounds } from "../utils";
-import { PieceSymbolString } from "../types";
+import { PieceSymbolString, Vector2 } from "../types";
 
 export default class King extends BaseGameObject {
 	
@@ -11,7 +11,7 @@ export default class King extends BaseGameObject {
 	getAvailableMoves() {		
 		const currentPosition = this.getPosition();
 		const otherPlayerMoves = this.refGameBoard.getPlayerMoves("player1" === this.getPlayerOwnership() ? "player2" : "player1", ["King"]);
-		return [
+		const moves = [
 			currentPosition.add(0, 1),
 			currentPosition.add(1, 1),
 			currentPosition.add(1, 0),
@@ -38,5 +38,17 @@ export default class King extends BaseGameObject {
 		}).map((destPosition) => { 
 			return [{ from: currentPosition, to: destPosition }];
 		});
+		const yCastling = "player1" === this.getPlayerOwnership() ? 8 : 1;
+		if ( this.getPosition().equals(new Vector2(5, yCastling))  
+		  && !this.refGameBoard.hasGameObject(new Vector2(6, yCastling))
+		  && !this.refGameBoard.hasGameObject(new Vector2(7, yCastling))
+		  && this.refGameBoard.hasGameObject(new Vector2(8, yCastling))
+	  	) {
+			const pieceForCastling = this.refGameBoard.getGameObject(new Vector2(8, yCastling));
+			if ("Rook" === pieceForCastling.getPieceSymbol() && pieceForCastling.getPlayerOwnership() === this.getPlayerOwnership()) {
+				moves.push([{ from: this.getPosition(), to: this.getPosition().add(2) }, { from: this.getPosition().add(3, 0), to: this.getPosition().add(1, 0)}]);
+			}
+		}
+		return moves;
 	}
 }

@@ -6,6 +6,7 @@ export interface GameSDKHandler {
 	move(from: Vector2, to: Vector2): void;
 	subscribe<T extends GameEventNames>(eventName:T, cb: (data: GameEventNamesArgsMap[T]) => void): void;
 	currentTurn: PlayerOwnership; 
+	startGame: () => void;
 
 }
 
@@ -40,6 +41,9 @@ export default function GameSDK(props: SDKProps): GameSDKHandler {
 		},
 		subscribe<T extends GameEventNames>(eventName:T, cb: (data: GameEventNamesArgsMap[T]) => void) {
 			gameBoard.on(eventName, cb);
-		} 
+		},
+		startGame() {
+			gameBoard.startGame();
+		}
 	};
 }

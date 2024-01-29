@@ -181,6 +181,7 @@ export interface PieceMovedArgs extends BaseEventArgs {
 	from: Vector2;
 	to: Vector2;
 	symbolType: PieceSymbolString;
+	ownership: PlayerOwnership;
 }
 
 export type GameEventNamesArgsMap =  {

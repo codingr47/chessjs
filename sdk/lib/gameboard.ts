@@ -157,6 +157,7 @@ class GameBoard {
 			from,
 			to,
 			symbolType: fromGameObject.getPieceSymbol(),
+			ownership: fromGameObject.getPlayerOwnership(),
 		});
 	}
 
