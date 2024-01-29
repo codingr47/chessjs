@@ -1,4 +1,4 @@
-import { PieceSymbolString } from "../types";
+import { PieceSymbolString } from "../temp";
 import { BaseGameObject } from "./base";
 
 export default class Rook extends BaseGameObject {

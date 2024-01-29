@@ -1,5 +1,15 @@
 import { v4 as uuid } from "uuid";
-import { BaseEventArgs, GameConfigurationObject, GameEventNames, GameEventNamesArgsMap, PieceSymbolString, PlayerMove, PlayerOwnership, Vector2, defaultGameConfiguration } from "./types";
+import { 
+	BaseEventArgs,
+	GameConfigurationObject,
+	GameEventNames,
+	GameEventNamesArgsMap,
+	PieceSymbolString,
+	PlayerMove,
+	PlayerOwnership,
+	Vector2,
+	defaultGameConfiguration
+} from "./types";
 import { gameObjectsMap } from "./gameobjects";
 import { GAMEOBJECT_DOESNT_EXIST, INVALID_MOVE } from "./errors";
 import { IEGameObject } from "./gameobjects/base";

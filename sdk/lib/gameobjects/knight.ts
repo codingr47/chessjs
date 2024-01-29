@@ -1,6 +1,6 @@
 import { BaseGameObject } from "./base";
 import { isPositionInGameBoardBounds } from "../utils";
-import { PieceSymbolString } from "../types";
+import { PieceSymbolString } from "../temp";
 
 export default class Knight extends BaseGameObject {
 	

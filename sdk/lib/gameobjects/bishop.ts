@@ -1,9 +1,11 @@
 import { BaseGameObject } from "./base";
-import { PieceSymbolString, Vector2 } from "../types";
+import { PieceSymbolString, Vector2 } from "../temp";
 
 export class Bishop extends BaseGameObject {
 	
-	static pieceSymbol: PieceSymbolString = "Bishop";
+	public getPieceSymbol(): PieceSymbolString {
+		return "Bishop";
+	}
 
 	public getAvailableMoves() {
 		return [
