@@ -1,7 +1,7 @@
 import { GameConfigurationObject } from "./gameConfiguration";
 import { PieceSymbolString, PlayerOwnership, Vector2 } from "./general";
 
-export type GameEventNames = "GameStarted" | "PieceDestroyed" | "Spawn" | "PieceMoved";
+export type GameEventNames = "GameStarted" | "PieceDestroyed" | "Spawn" | "PieceMoved" | "Check" | "CheckMate";
 
 
 export interface BaseEventArgs  {
@@ -29,9 +29,22 @@ export interface PieceMovedArgs extends BaseEventArgs {
 	ownership: PlayerOwnership;
 }
 
+export interface CheckArgs extends BaseEventArgs {
+	threatenedPlayer: PlayerOwnership;
+	threatFrom: Vector2[];
+}
+
+export interface CheckMateArgs extends BaseEventArgs {
+	beatenPlayer: PlayerOwnership;
+}
+
 export type GameEventNamesArgsMap =  {
 	GameStarted: GameStartedArgs;
 	PieceMoved: PieceMovedArgs;
 	PieceDestroyed: PieceDestroyedArgs;
 	Spawn: SpawnArgs;
+	Check: CheckArgs;
+	CheckMate: CheckMateArgs;
 }
+
+

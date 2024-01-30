@@ -10,6 +10,7 @@ import {
 	Vector2,
 	defaultGameConfiguration
 } from "./types";
+import { getBaseEventObject } from "./utils";
 import { gameObjectsMap } from "./gameobjects";
 import { GAMEOBJECT_DOESNT_EXIST, INVALID_MOVE } from "./errors";
 import { IEGameObject } from "./gameobjects/base";
@@ -45,7 +46,7 @@ class GameBoard {
 			this.spawnGameObject(new Vector2(conf.x, conf.y), conf.type, conf.ownership);
 		}
 		this.notify("GameStarted", { 
-			...this.getBaseEventObject(),
+			...getBaseEventObject(),
 			configuration: from 
 		});
 	} 
@@ -101,11 +102,13 @@ class GameBoard {
 		}
 	}
 
-	private getBaseEventObject(): BaseEventArgs {
-		return {
-			time: new Date().toISOString(),
-		};
-	}
+	public getGameObjectsByPieceSymbol(symbol: PieceSymbolString, forPlayer?: PlayerOwnership): IEGameObject[] {
+		return Array.from(this.mapGameObjects.values())
+			.filter((o) => { 
+				return symbol === o.gameObject.getPieceSymbol() && (!forPlayer || forPlayer === o.gameObject.getPlayerOwnership());
+			})
+			.map((o) => o.gameObject);
+	} 
 
 	public hasGameObject(i: Vector2 | string): boolean {
 		try {
@@ -153,7 +156,7 @@ class GameBoard {
 			this.gameObjects[to.Y - 1][to.X - 1] = null;
 			this.mapGameObjects.delete(toGameObject.getId());
 			this.notify("PieceDestroyed", {
-				...this.getBaseEventObject(),
+				...getBaseEventObject(),
 				ownership: toGameObject.getPlayerOwnership(),
 				position: to,
 				symbolType: toGameObject.getPieceSymbol(),
@@ -163,7 +166,7 @@ class GameBoard {
 		}
 		this.gameObjects[to.Y - 1][to.X - 1] = fromGameObject;
 		this.notify("PieceMoved", {
-			...this.getBaseEventObject(),
+			...getBaseEventObject(),
 			from,
 			to,
 			symbolType: fromGameObject.getPieceSymbol(),
@@ -193,7 +196,7 @@ class GameBoard {
 		this.callbacks[eventName]?.push(cb);
 	}
 
-	private notify<T extends GameEventNames>(eventName: T, data: GameEventNamesArgsMap[T]) {
+	public notify<T extends GameEventNames>(eventName: T, data: GameEventNamesArgsMap[T]) {
 		const callbacks = this.callbacks[eventName];
 		if (callbacks) {
 			callbacks.forEach((cb) =>  {
@@ -201,7 +204,6 @@ class GameBoard {
 			});
 		}
 	}
-
 	
 }
 
