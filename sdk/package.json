@@ -5,7 +5,8 @@
   "main": "lib/sdk.ts",
   "scripts": {
     "test": "jest --verbose",
-    "test:gameboard": "jest --verbose __tests__/unit/gameboard.test.ts"
+    "test:gameboard": "jest --verbose __tests__/unit/gameboard.test.ts",
+    "test:sdk": "jest --verbose __tests__/unit/sdk.test.ts"
   },
   "repository": {
     "type": "git",

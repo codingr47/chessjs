@@ -26,7 +26,8 @@ export default function GameSDK(props: SDKProps): GameSDKHandler {
 			currentPlayer = "player1";
 		}
 	};
-	const checkForCheck = () => {
+
+	const getOtherPlayerThreateningMoves = (): Vector2[] => { 
 		const currentPlayerKingPosition = gameBoard.getGameObjectsByPieceSymbol("King", currentPlayer)[0].getPosition();
 		const threateningPlayer: PlayerOwnership = "player1" === currentPlayer ? "player2" : "player1"
 		const otherPlayerMoves = gameBoard.getPlayerMoves(threateningPlayer, ["King"]);
@@ -39,18 +40,26 @@ export default function GameSDK(props: SDKProps): GameSDKHandler {
 				threateningPositions.push(threateningMove.from);
 			}
 		});
-		if ( 0 < threateningPositions.length) {
-			gameBoard.notify("Check", {
-				...getBaseEventObject(),
-				threatenedPlayer: currentPlayer,
-				threatFrom: threateningPositions,
-			});
+		return threateningPositions;
+	};
+
+	const checkForCheck = () => {
+		if (!gameOver) {
+			const threateningPositions = getOtherPlayerThreateningMoves();
+			if ( 0 < threateningPositions.length) {
+				gameBoard.notify("Check", {
+					...getBaseEventObject(),
+					threatenedPlayer: currentPlayer,
+					threatFrom: threateningPositions,
+				});
+			}
 		}
 	}
 
-	const checkForChackMate = () => {
+	const checkForCheckMate = () => {
 		const kingMoves = gameBoard.getGameObjectsByPieceSymbol("King", currentPlayer)[0].getAvailableMoves();
-		if (0 === kingMoves.length) {
+		const threateningPositions = getOtherPlayerThreateningMoves();
+		if (0 === kingMoves.length && 0 < threateningPositions.length) {
 			gameOver = true;
 			gameBoard.notify("CheckMate", {
 				...getBaseEventObject(),
@@ -76,15 +85,16 @@ export default function GameSDK(props: SDKProps): GameSDKHandler {
 			}
 			gameBoard.move(from, to);
 			togglePlayer();
-			checkForChackMate();
+			checkForCheckMate();
 			checkForCheck();
+			
 		},
 		subscribe<T extends GameEventNames>(eventName:T, cb: (data: GameEventNamesArgsMap[T]) => void) {
 			gameBoard.on(eventName, cb);
 		},
 		startGame() {
 			gameBoard.startGame();
-			checkForChackMate();
+			checkForCheckMate();
 			checkForCheck();
 		},
 		
